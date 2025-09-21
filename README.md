@@ -30,6 +30,3 @@ The website showcases my **projects, skills, and achievements** with a visually 
 - **Version Control:** Git & GitHub  
 
 ---
-
-   git clone https://github.com/ashishkhopde/Portfolio.git
-   cd Portfolio

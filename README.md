@@ -2,7 +2,7 @@
 
 Protfolio
 
-🔗 Live Demo: [https://enhanceai-ai.netlify.app/](https://ashishkhopdeportfolio.netlify.app/)
+🔗 Live Demo: (https://ashishkhopdeportfolio.netlify.app/)
 
 ## 📌 About
 

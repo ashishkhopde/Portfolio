@@ -31,14 +31,7 @@ The website showcases my **projects, skills, and achievements** with a visually 
 
 ---
 
-## 🚀 Getting Started
 
-### Prerequisites
-Make sure you have the following installed:
-- [Node.js](https://nodejs.org/) (v16 or higher recommended)  
-- npm or yarn package manager  
-
-### Installation
 
 1. Clone the repository  
    ```bash

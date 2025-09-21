@@ -29,6 +29,9 @@ import tesla from "./company/tesla.png";
 import virtualHelper from './virtualHelper.png'; 
 import enhanceAI from './enhanceAI.png';
 
+import gitHub from './gitHub.gif';
+import linkedIn from './linkedIn.png'
+
 
 export {
   logo,
@@ -57,5 +60,7 @@ export {
   starbucks,
   tesla,
   virtualHelper,
-  enhanceAI
+  enhanceAI,
+  gitHub,
+  linkedIn
 };

@@ -3,6 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 
 import { About, Contact, Experience, Feedbacks, Hero, Navbar, StarsCanvas, Tech, Works } from './components'
+import Footer from './components/Footer';
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <div className='relative z-0'>
           <Contact/>
           <StarsCanvas/>
+          <Footer/>
         </div>
       </div>
     </BrowserRouter>

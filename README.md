@@ -31,9 +31,5 @@ The website showcases my **projects, skills, and achievements** with a visually 
 
 ---
 
-
-
-1. Clone the repository  
-   ```bash
    git clone https://github.com/ashishkhopde/Portfolio.git
    cd Portfolio

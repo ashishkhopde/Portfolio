@@ -2,7 +2,7 @@
 
 Protfolio
 
-🔗 Live Demo: (https://ashishkhopdeportfolio.netlify.app/)
+🔗 Live Demo: https://ashishkhopdeportfolio.netlify.app/
 
 ## 📌 About
 
@@ -36,3 +36,4 @@ The website showcases my **projects, skills, and achievements** with a visually 
 - **Version Control:** Git & GitHub  
 
 ---
+#### ⚡ Made by ❤️ Ashish Khopde

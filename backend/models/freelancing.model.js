@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 
-const projectSchema = new Schema({
+const freelancingSchema = new Schema({
     name: {
         type: String,
         required: true
@@ -23,4 +23,4 @@ const projectSchema = new Schema({
     }
 });
 
-export default model("Project", projectSchema);
+export default model("Freelancing", freelancingSchema);

@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import emailjs from '@emailjs/browser';
+import axios from 'axios';
+
 
 import { styles } from '../styles';
 import { EarthCanvas } from './canvas';
@@ -38,19 +39,13 @@ const Contact = () => {
     try {
       setLoading(true);
 
-      await emailjs.send(
-        import.meta.env.VITE_APP_EMAILJS_SERVICE_ID,
-        import.meta.env.VITE_APP_EMAILJS_TEMPLATE_ID,
-        {
-          from_name: form.name,         
-          from_email: form.email,       
-          to_name: "Ashish Khopde",         
-          to_email: "ashishkhopde7089@gmail.com", 
-          message: form.message,
-        },
-        import.meta.env.VITE_APP_EMAILJS_PUBLIC_KEY
-      );
+      const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/contact`, {
+        name: form.name,
+        email: form.email,
+        message: form.message,
+      });
 
+      // console.log("Contact form submitted:", res.data);
       setLoading(false);
       alert("✅ Thank you. I will get back to you as soon as possible.");
 

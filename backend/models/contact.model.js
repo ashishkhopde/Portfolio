@@ -14,6 +14,6 @@ const contactSchema = new Schema({
         type: String,
         required: true
     }
-});
+}, { timestamps: true });
 
 export default model("Contact", contactSchema);

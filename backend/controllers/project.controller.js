@@ -2,7 +2,7 @@ import projectModel from "../models/project.model.js"
 
 export const getAllProjects = async (req, res) => {
     try {
-        const projects = await projectModel.find();
+        const projects = await projectModel.find().sort({ createdAt: -1 });
         res.json(projects);
     } catch (error) {
         console.error("Error fetching projects:", error);

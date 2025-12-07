@@ -2,7 +2,7 @@ import freelancingModel from "../models/freelancing.model.js";
 
 export const getFreelancingInfo = async (req, res) => {
     try {
-        const freelancingInfo = await freelancingModel.find();
+        const freelancingInfo = await freelancingModel.find().sort({ createdAt: -1 });
         res.status(200).json(freelancingInfo);
     } catch (error) {
         res.status(500).json({ message: "Server Error", error: error.message });

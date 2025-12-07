@@ -59,7 +59,7 @@ const Works = () => {
     const fetchProjects = async () => {
       try {
         const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/projects`);
-        console.log(res.data);
+        // console.log(res.data);
         setProjects(res.data);
       } catch (error) {
         console.error("Error fetching projects:", error);

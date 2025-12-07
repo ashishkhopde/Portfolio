@@ -1,11 +1,14 @@
-import React from 'react';
+import React,{ useState, useEffect } from 'react';
+import axios from 'axios';
+
 import { Tilt } from 'react-tilt';
 import { motion, scale } from 'framer-motion';
 import { styles } from '../styles';
 import { github } from '../assets';
 import { SectionWrapper } from '../hoc';
 import { fadeIn, textVariant } from '../utils/motion';
-import { projects } from '../contants';
+// import { projects } from '../contants';
+
 
 const ProjectCard = ({ index, name, description, tags, image, source_code_link }) => {
   return (
@@ -50,6 +53,17 @@ const ProjectCard = ({ index, name, description, tags, image, source_code_link }
 }
 
 const ClientWorks = () => {
+
+  const [projects, setProjects] = useState([]);
+  
+  useEffect(() => {
+    async function fetchFreelancingProjects() {
+      const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/freelancing`);
+      setProjects(res.data);
+    }
+    fetchFreelancingProjects();
+  }, []);
+
   return (
     <>
       <motion.div variants={textVariant()}>

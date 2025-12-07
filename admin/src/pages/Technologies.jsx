@@ -5,6 +5,8 @@ import { Pencil, Trash2, Layers, Plus } from "lucide-react";
 export default function Technologies() {
   const [technologies, setTechnologies] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentId, setCurrentId] = useState(null);
   const [formData, setFormData] = useState({ name: "", icon: "" });
 
   // ✅ Fetch all technologies
@@ -17,27 +19,50 @@ export default function Technologies() {
     }
   };
 
-  // ✅ Add a new technology
-  const addTechnology = async (e) => {
+  // ✅ Add or Update a technology
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await API.post("/technologies", formData);
+      if (isEditing) {
+        await API.put(`/technologies/${currentId}`, formData);
+      } else {
+        await API.post("/technologies", formData);
+      }
       setShowModal(false);
+      setIsEditing(false);
       setFormData({ name: "", icon: "" });
       fetchTechnologies();
     } catch (err) {
-      console.error("Error adding technology:", err);
+      console.error("Error saving technology:", err);
     }
   };
 
   // ✅ Delete a technology
   const deleteTechnology = async (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this?");
+    if (!confirmDelete) return;
     try {
       await API.delete(`/technologies/${id}`);
       fetchTechnologies();
+      alert("✅ Technology deleted successfully!");
     } catch (err) {
       console.error("Error deleting technology:", err);
     }
+  };
+
+  // ✅ Open modal for editing
+  const handleEdit = (tech) => {
+    setFormData({ name: tech.name, icon: tech.icon });
+    setCurrentId(tech._id);
+    setIsEditing(true);
+    setShowModal(true);
+  };
+
+  // ✅ Open modal for adding
+  const handleAdd = () => {
+    setFormData({ name: "", icon: "" });
+    setIsEditing(false);
+    setShowModal(true);
   };
 
   useEffect(() => {
@@ -54,7 +79,7 @@ export default function Technologies() {
         </h1>
 
         <button
-          onClick={() => setShowModal(true)}
+          onClick={handleAdd}
           className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700 transition"
         >
           <Plus size={20} /> Add Technology
@@ -98,7 +123,7 @@ export default function Technologies() {
                 <td className="px-6 py-4 text-center">
                   <div className="flex justify-center gap-4">
                     <button
-                      onClick={() => console.log("Edit", tech)}
+                      onClick={() => handleEdit(tech)}
                       className="flex items-center gap-2 px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-all font-medium"
                     >
                       <Pencil size={18} /> Edit
@@ -124,15 +149,15 @@ export default function Technologies() {
         )}
       </div>
 
-      {/* ✨ Add Technology Modal */}
+      {/* ✨ Add/Edit Technology Modal */}
       {showModal && (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-40 z-50">
           <div className="bg-white rounded-2xl p-8 shadow-lg w-full max-w-md relative">
             <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-              Add New Technology
+              {isEditing ? "Edit Technology" : "Add New Technology"}
             </h2>
 
-            <form onSubmit={addTechnology} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-gray-700 font-medium mb-2">
                   Name
@@ -178,9 +203,13 @@ export default function Technologies() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium"
+                  className={`px-4 py-2 rounded-lg text-white font-medium transition ${
+                    isEditing
+                      ? "bg-blue-600 hover:bg-blue-700"
+                      : "bg-indigo-600 hover:bg-indigo-700"
+                  }`}
                 >
-                  Add
+                  {isEditing ? "Update" : "Add"}
                 </button>
               </div>
             </form>

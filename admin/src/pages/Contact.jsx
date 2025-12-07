@@ -4,6 +4,8 @@ import { Trash2, Mail, User } from "lucide-react";
 
 export default function Contact() {
   const [messages, setMessages] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   // ✅ Fetch all contact messages
   const fetchMessages = async () => {
@@ -15,11 +17,19 @@ export default function Contact() {
     }
   };
 
-  // ✅ Delete a message
-  const deleteMessage = async (id) => {
+  // ✅ Delete message
+  const confirmDelete = (id) => {
+    setSelectedId(id);
+    setShowConfirm(true);
+  };
+
+  const deleteMessage = async () => {
     try {
-      await API.delete(`/contact/${id}`);
+      await API.delete(`/contact/${selectedId}`);
+      setShowConfirm(false);
+      setSelectedId(null);
       fetchMessages();
+      alert("✅ Message deleted successfully!");
     } catch (err) {
       console.error("Error deleting message:", err);
     }
@@ -84,7 +94,7 @@ export default function Contact() {
                 {/* 🗑️ Delete Action */}
                 <td className="px-6 py-4 text-center">
                   <button
-                    onClick={() => deleteMessage(msg._id)}
+                    onClick={() => confirmDelete(msg._id)}
                     className="flex items-center gap-2 px-3 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-all font-medium mx-auto"
                   >
                     <Trash2 size={18} /> Delete
@@ -102,6 +112,34 @@ export default function Contact() {
           </div>
         )}
       </div>
+
+      {/* 🧾 Delete Confirmation Modal */}
+      {showConfirm && (
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-40 z-50">
+          <div className="bg-white rounded-2xl p-8 shadow-xl w-full max-w-md text-center">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+              Delete Message?
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to permanently delete this contact message?
+            </p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => setShowConfirm(false)}
+                className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={deleteMessage}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium"
+              >
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -18,3 +18,16 @@ export const postContact = async (req, res) => {
         res.status(500).json({ message: "Server Error", error: error.message });
     }
 };
+
+export const deleteContact = async (req, res) => {
+    try {
+        const { id } = req.params;  
+        const deletedContact = await contactModel.findByIdAndDelete(id);
+        if (!deletedContact) {
+            return res.status(404).json({ message: "Contact message not found" });
+        }
+        res.status(200).json({ message: "Contact message deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Server Error", error: error.message });
+    }
+};

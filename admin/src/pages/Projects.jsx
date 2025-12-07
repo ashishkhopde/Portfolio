@@ -5,6 +5,9 @@ import { Pencil, Trash2, ExternalLink, Github, Plus } from "lucide-react";
 export default function Projects() {
   const [projects, setProjects] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingProject, setEditingProject] = useState(null);
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -23,26 +26,35 @@ export default function Projects() {
     }
   };
 
-  // ✅ Add a new project
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  // ✅ Add new project
   const addProject = async (e) => {
     e.preventDefault();
     try {
       await API.post("/projects", formData);
-      setShowModal(false);
-      setFormData({
-        name: "",
-        description: "",
-        image: "",
-        source_code_link: "",
-        live_link: "",
-      });
+      closeModal();
       fetchProjects();
     } catch (err) {
       console.error("Error adding project:", err);
     }
   };
 
-  // ✅ Delete a project
+  // ✅ Update project
+  const updateProject = async (e) => {
+    e.preventDefault();
+    try {
+      await API.put(`/projects/${editingProject}`, formData);
+      closeModal();
+      fetchProjects();
+    } catch (err) {
+      console.error("Error updating project:", err);
+    }
+  };
+
+  // ✅ Delete project
   const deleteProject = async (id) => {
     try {
       await API.delete(`/projects/${id}`);
@@ -52,16 +64,39 @@ export default function Projects() {
     }
   };
 
-  useEffect(() => {
-    fetchProjects();
-  }, []);
+  // ✅ Open modal in edit mode
+  const handleEdit = (project) => {
+    setFormData({
+      name: project.name,
+      description: project.description,
+      image: project.image,
+      source_code_link: project.source_code_link,
+      live_link: project.live_link,
+    });
+    setEditingProject(project._id);
+    setIsEditing(true);
+    setShowModal(true);
+  };
+
+  // ✅ Reset form & close modal
+  const closeModal = () => {
+    setShowModal(false);
+    setIsEditing(false);
+    setEditingProject(null);
+    setFormData({
+      name: "",
+      description: "",
+      image: "",
+      source_code_link: "",
+      live_link: "",
+    });
+  };
 
   return (
     <div className="ml-72 p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-4xl font-semibold text-gray-800">Projects</h1>
-
         <button
           onClick={() => setShowModal(true)}
           className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700 transition"
@@ -142,7 +177,7 @@ export default function Projects() {
                 <td className="px-6 py-4 text-center">
                   <div className="flex justify-center gap-4">
                     <button
-                      onClick={() => console.log("Edit", project)}
+                      onClick={() => handleEdit(project)}
                       className="flex items-center gap-2 px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-all font-medium"
                     >
                       <Pencil size={18} /> Edit
@@ -167,15 +202,18 @@ export default function Projects() {
         )}
       </div>
 
-      {/* ✨ Add Project Modal */}
+      {/* ✨ Add/Edit Project Modal */}
       {showModal && (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-40 z-50">
           <div className="bg-white rounded-2xl p-8 shadow-lg w-full max-w-2xl relative">
             <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-              Add New Project
+              {isEditing ? "Edit Project" : "Add New Project"}
             </h2>
 
-            <form onSubmit={addProject} className="space-y-4">
+            <form
+              onSubmit={isEditing ? updateProject : addProject}
+              className="space-y-4"
+            >
               <div>
                 <label className="block text-gray-700 font-medium mb-2">
                   Name
@@ -265,7 +303,7 @@ export default function Projects() {
               <div className="flex justify-end gap-4 mt-6">
                 <button
                   type="button"
-                  onClick={() => setShowModal(false)}
+                  onClick={closeModal}
                   className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition font-medium"
                 >
                   Cancel
@@ -274,7 +312,7 @@ export default function Projects() {
                   type="submit"
                   className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium"
                 >
-                  Add Project
+                  {isEditing ? "Update Project" : "Add Project"}
                 </button>
               </div>
             </form>

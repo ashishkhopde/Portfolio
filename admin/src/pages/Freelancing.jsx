@@ -5,6 +5,9 @@ import { Pencil, Trash2, ExternalLink, Github, Briefcase, Plus } from "lucide-re
 export default function Freelancing() {
   const [freelanceList, setFreelanceList] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -13,7 +16,7 @@ export default function Freelancing() {
     live_link: "",
   });
 
-  // ✅ Fetch data
+  // ✅ Fetch all data
   const fetchFreelance = async () => {
     try {
       const res = await API.get("/freelancing");
@@ -23,22 +26,45 @@ export default function Freelancing() {
     }
   };
 
-  // ✅ Add new freelancing project
+  useEffect(() => {
+    fetchFreelance();
+  }, []);
+
+  // ✅ Add new record
   const addFreelance = async (e) => {
     e.preventDefault();
     try {
       await API.post("/freelancing", formData);
-      setShowModal(false);
-      setFormData({
-        name: "",
-        description: "",
-        image: "",
-        source_code_link: "",
-        live_link: "",
-      });
+      closeModal();
       fetchFreelance();
     } catch (err) {
       console.error("Error adding freelancing project:", err);
+    }
+  };
+
+  // ✅ Edit record (open modal with pre-filled data)
+  const handleEdit = (item) => {
+    setFormData({
+      name: item.name,
+      description: item.description,
+      image: item.image,
+      source_code_link: item.source_code_link,
+      live_link: item.live_link,
+    });
+    setEditingId(item._id);
+    setIsEditing(true);
+    setShowModal(true);
+  };
+
+  // ✅ Update record
+  const updateFreelance = async (e) => {
+    e.preventDefault();
+    try {
+      await API.put(`/freelancing/${editingId}`, formData);
+      closeModal();
+      fetchFreelance();
+    } catch (err) {
+      console.error("Error updating freelancing info:", err);
     }
   };
 
@@ -52,9 +78,19 @@ export default function Freelancing() {
     }
   };
 
-  useEffect(() => {
-    fetchFreelance();
-  }, []);
+  // ✅ Reset modal
+  const closeModal = () => {
+    setShowModal(false);
+    setIsEditing(false);
+    setEditingId(null);
+    setFormData({
+      name: "",
+      description: "",
+      image: "",
+      source_code_link: "",
+      live_link: "",
+    });
+  };
 
   return (
     <div className="ml-72 p-6">
@@ -148,7 +184,7 @@ export default function Freelancing() {
                 <td className="px-6 py-4 text-center">
                   <div className="flex justify-center gap-4">
                     <button
-                      onClick={() => console.log("Edit", item)}
+                      onClick={() => handleEdit(item)}
                       className="flex items-center gap-2 px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-all font-medium"
                     >
                       <Pencil size={18} /> Edit
@@ -174,15 +210,18 @@ export default function Freelancing() {
         )}
       </div>
 
-      {/* ✨ Add Project Modal */}
+      {/* ✨ Add/Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-40 z-50">
           <div className="bg-white rounded-2xl p-8 shadow-lg w-full max-w-2xl relative">
             <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-              Add Freelancing Project
+              {isEditing ? "Edit Freelancing Project" : "Add Freelancing Project"}
             </h2>
 
-            <form onSubmit={addFreelance} className="space-y-4">
+            <form
+              onSubmit={isEditing ? updateFreelance : addFreelance}
+              className="space-y-4"
+            >
               <div>
                 <label className="block text-gray-700 font-medium mb-2">
                   Name
@@ -196,7 +235,6 @@ export default function Freelancing() {
                   }
                   required
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-400 outline-none"
-                  placeholder="Project name"
                 />
               </div>
 
@@ -213,7 +251,6 @@ export default function Freelancing() {
                   required
                   rows="4"
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-400 outline-none"
-                  placeholder="Short description of the project"
                 ></textarea>
               </div>
 
@@ -230,7 +267,6 @@ export default function Freelancing() {
                   }
                   required
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-400 outline-none"
-                  placeholder="https://example.com/image.png"
                 />
               </div>
 
@@ -251,7 +287,6 @@ export default function Freelancing() {
                     }
                     required
                     className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-400 outline-none"
-                    placeholder="https://github.com/yourproject"
                   />
                 </div>
 
@@ -268,7 +303,6 @@ export default function Freelancing() {
                     }
                     required
                     className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-400 outline-none"
-                    placeholder="https://yourproject.com"
                   />
                 </div>
               </div>
@@ -277,7 +311,7 @@ export default function Freelancing() {
               <div className="flex justify-end gap-4 mt-6">
                 <button
                   type="button"
-                  onClick={() => setShowModal(false)}
+                  onClick={closeModal}
                   className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition font-medium"
                 >
                   Cancel
@@ -286,7 +320,7 @@ export default function Freelancing() {
                   type="submit"
                   className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium"
                 >
-                  Add Project
+                  {isEditing ? "Update Project" : "Add Project"}
                 </button>
               </div>
             </form>

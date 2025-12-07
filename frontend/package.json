@@ -15,7 +15,6 @@
     "@react-three/fiber": "^9.3.0",
     "@tailwindcss/vite": "^4.1.13",
     "axios": "^1.13.2",
-    "emailjs": "^4.0.3",
     "framer-motion": "^12.23.15",
     "prop-types": "^15.8.1",
     "react": "^19.1.1",

@@ -18,7 +18,7 @@ connectDB();
 app.use('/api/projects', projectRoute);
 app.use('/api/technologies', technologiesRoute);
 app.use('/api/freelancing', freelancingRoute);
-app.use('/api/contact', contactRoute)
+app.use('/api/contact', contactRoute);
 
 app.listen(process.env.PORT, () => {
     console.log("listening...");

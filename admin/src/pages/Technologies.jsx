@@ -23,10 +23,15 @@ export default function Technologies() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (isEditing) {
-        await API.put(`/technologies/${currentId}`, formData);
+      const data = new FormData(e.target);
+       if (isEditing) {
+        await API.put(`/technologies/${currentId}`, data, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
       } else {
-        await API.post("/technologies", formData);
+        await API.post("/technologies", data, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
       }
       setShowModal(false);
       setIsEditing(false);
@@ -177,16 +182,17 @@ export default function Technologies() {
 
               <div>
                 <label className="block text-gray-700 font-medium mb-2">
-                  Icon URL
+                  Icon 
                 </label>
                 <input
-                  type="text"
+                  type="file"
                   name="icon"
+                  accept="image/*"
                   value={formData.icon}
                   onChange={(e) =>
                     setFormData({ ...formData, icon: e.target.value })
                   }
-                  required
+                  required={!isEditing}
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-400 outline-none"
                   placeholder="https://example.com/react-icon.png"
                 />

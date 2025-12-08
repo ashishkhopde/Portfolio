@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { getFreelancingInfo, postFreelancingInfo, editFreelancingInfo, deleteFreelancingInfo } from "../controllers/freelancing.controller.js";
+import { upload } from "../middlewares/multer.middleware.js";
 
 const router = Router();
 

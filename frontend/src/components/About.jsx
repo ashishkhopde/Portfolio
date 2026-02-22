@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {Tilt} from "react-tilt";
 import { motion } from "framer-motion";
 
@@ -7,18 +7,23 @@ import { services } from "../contants";
 import { SectionWrapper } from "../hoc";
 import { fadeIn, textVariant } from "../utils/motion";
 
-const ServiceCard = ({ index, title, icon }) => (
-  <Tilt className='sm:w-[250px] w-full'>
+const ServiceCard = ({ index, title, icon, isMobile }) => {
+  const tiltOptions = useMemo(
+    () => ({
+      max: isMobile ? 12 : 35,
+      scale: isMobile ? 1 : 1.02,
+      speed: isMobile ? 280 : 420,
+    }),
+    [isMobile]
+  );
+
+  return (
+  <Tilt className='sm:w-[250px] w-full' options={tiltOptions}>
     <motion.div
-      variants={fadeIn("right", "spring", index * 0.5, 0.75)}
+      variants={fadeIn("right", "spring", index * (isMobile ? 0.2 : 0.5), 0.75)}
       className='w-full green-pink-gradient p-[1px] rounded-[20px] shadow-card'
     >
       <div
-        options={{
-          max: 45,
-          scale: 1,
-          speed: 450,
-        }}
         className='bg-[#151030] rounded-[20px] py-5 px-12 min-h-[280px] flex justify-evenly items-center flex-col'
       >
         <img
@@ -33,9 +38,33 @@ const ServiceCard = ({ index, title, icon }) => (
       </div>
     </motion.div>
   </Tilt>
-);
+  );
+};
 
 const About = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) {
+      return undefined;
+    }
+
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
+    setIsMobile(mediaQuery.matches);
+
+    const handleMediaQueryChange = (event) => {
+      setIsMobile(event.matches);
+    };
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", handleMediaQueryChange);
+      return () => mediaQuery.removeEventListener("change", handleMediaQueryChange);
+    }
+
+    mediaQuery.addListener(handleMediaQueryChange);
+    return () => mediaQuery.removeListener(handleMediaQueryChange);
+  }, []);
+
   return (
     <>
       <motion.div variants={textVariant()}>
@@ -52,7 +81,7 @@ const About = () => {
 
       <div className='mt-20 flex flex-wrap gap-10 justify-center'>
         {services.map((service, index) => (
-          <ServiceCard key={service.title} index={index} {...service} />
+          <ServiceCard key={service.title} index={index} isMobile={isMobile} {...service} />
         ))}
       </div>
     </>

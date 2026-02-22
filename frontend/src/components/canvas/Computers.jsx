@@ -4,10 +4,10 @@ import { OrbitControls, Preload, useGLTF } from '@react-three/drei';
 
 import CanvasLoader from '../Loader';
 
+const MODEL_PATH = '/desktop_pc/scene.gltf';
 
 const Computers = ({ isMobile }) => {
-
-  const computer = useGLTF('./desktop_pc/scene.gltf');
+  const computer = useGLTF(MODEL_PATH);
 
   return (
     <mesh>
@@ -18,7 +18,7 @@ const Computers = ({ isMobile }) => {
         angle={0.12}
         penumbra={1}
         intensity={3}
-        castShadow
+        castShadow={!isMobile}
         shadow-mapSize={1024}
       />
       <primitive
@@ -28,43 +28,42 @@ const Computers = ({ isMobile }) => {
         rotation={[-0.01, -0.2, -0.1]}
       />
     </mesh>
-
-  )
-}
+  );
+};
 
 const ComputersCanvas = () => {
-
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) {
+      return undefined;
+    }
 
-    // Add a listener for changes to the screen size
     const mediaQuery = window.matchMedia('(max-width:500px)');
-
-    // Set the initial value of the `isMobile` state variable
     setIsMobile(mediaQuery.matches);
 
-    // Define a callback function to handle changes to the media query
     const handleMediaQueryChange = (event) => {
       setIsMobile(event.matches);
+    };
+
+    // Safari < 14 fallback
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleMediaQueryChange);
+      return () => mediaQuery.removeEventListener('change', handleMediaQueryChange);
     }
 
-    // Add the callback function as a listener for changes to the media query
-    mediaQuery.addEventListener('change', handleMediaQueryChange);
-
-    // Remove the listener when the component is unmounted
-    return () => {
-      mediaQuery.removeEventListener('change', handleMediaQueryChange)
-    }
-  }, [])
-
+    mediaQuery.addListener(handleMediaQueryChange);
+    return () => mediaQuery.removeListener(handleMediaQueryChange);
+  }, []);
 
   return (
     <Canvas
-      frameloop='demand'
-      shadows
-      camera={{ position: [20, 3, 5], fov: 25 }}
-      gl={{ preserveDrawingBuffer: true }}
+      frameloop={isMobile ? 'always' : 'demand'}
+      shadows={!isMobile}
+      dpr={[1, isMobile ? 1.5 : 2]}
+      camera={{ position: [20, 3, 5], fov: isMobile ? 35 : 25 }}
+      gl={{ antialias: !isMobile, preserveDrawingBuffer: false, powerPreference: 'high-performance' }}
+      style={{ width: '100%', height: '100%' }}
     >
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls
@@ -77,7 +76,9 @@ const ComputersCanvas = () => {
 
       <Preload all />
     </Canvas>
-  )
-}
+  );
+};
+
+useGLTF.preload(MODEL_PATH);
 
 export default ComputersCanvas;
